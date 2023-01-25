@@ -236,7 +236,7 @@ void uart_buff_switch(uint8_t uart_no);
   *
   * @return OK.
   */
-STATUS uart_tx_one_char(uint8_t TxChar);
+ETS_STATUS uart_tx_one_char(uint8_t TxChar);
 
 /**
   * @brief Output a char to message exchange channel, wait until fifo not full.
@@ -246,7 +246,7 @@ STATUS uart_tx_one_char(uint8_t TxChar);
   *
   * @return OK.
   */
-STATUS uart_tx_one_char2(uint8_t TxChar);
+ETS_STATUS uart_tx_one_char2(uint8_t TxChar);
 
 /**
   * @brief Wait until uart tx full empty.
@@ -276,7 +276,7 @@ void uart_tx_wait_idle(uint8_t uart_no);
   * @return OK for successful.
   *         FAIL for failed.
   */
-STATUS uart_rx_one_char(uint8_t *pRxChar);
+ETS_STATUS uart_rx_one_char(uint8_t *pRxChar);
 
 /**
   * @brief Get an input char from message channel, wait until successful.
@@ -298,7 +298,7 @@ char uart_rx_one_char_block(void);
   *
   * @return OK.
   */
-STATUS UartRxString(uint8_t *pString, uint8_t MaxStrlen);
+ETS_STATUS UartRxString(uint8_t *pString, uint8_t MaxStrlen);
 
 /**
   * @brief Process uart recevied information in the interrupt handler.
@@ -321,7 +321,7 @@ void uart_rx_intr_handler(void *para);
   * @return OK for successful.
   *         FAIL for failed.
   */
-STATUS uart_rx_readbuff( RcvMsgBuff *pRxBuff, uint8_t *pRxByte);
+ETS_STATUS uart_rx_readbuff( RcvMsgBuff *pRxBuff, uint8_t *pRxByte);
 
 /**
   * @brief Get all chars from receive buffer.
@@ -332,7 +332,7 @@ STATUS uart_rx_readbuff( RcvMsgBuff *pRxBuff, uint8_t *pRxByte);
   * @return OK for successful.
   *         FAIL for failed.
   */
-STATUS UartGetCmdLn(uint8_t *pCmdLn);
+ETS_STATUS UartGetCmdLn(uint8_t *pCmdLn);
 
 /**
   * @brief Get uart configuration struct.
@@ -382,7 +382,7 @@ int recv_packet(uint8_t *p, int len, uint8_t is_sync);
   * @return OK for successful.
   *         FAIL for failed.
   */
-STATUS SendMsg(uint8_t *pData, uint16_t DataLen);
+ETS_STATUS SendMsg(uint8_t *pData, uint16_t DataLen);
 
 /**
   * @brief Receive an packet from download tool, with SLIP escaping.
@@ -398,7 +398,7 @@ STATUS SendMsg(uint8_t *pData, uint16_t DataLen);
   * @return OK for successful.
   *         FAIL for failed.
   */
-STATUS RcvMsg(uint8_t *pData, uint16_t MaxDataLen, uint8_t is_sync);
+ETS_STATUS RcvMsg(uint8_t *pData, uint16_t MaxDataLen, uint8_t is_sync);
 
 /**
   * @brief Check if this UART is in download connection.

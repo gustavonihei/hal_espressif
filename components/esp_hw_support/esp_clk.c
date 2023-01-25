@@ -6,7 +6,10 @@
 
 #ifdef __ZEPHYR__
 #include <zephyr/kernel.h>
+#elif defined(__NuttX__)
+#include <nuttx/irq.h>
 #endif
+
 #include <stdint.h>
 #include <sys/param.h>
 #include <sys/lock.h>
@@ -41,6 +44,18 @@
 #define MHZ (1000000)
 #endif
 
+#ifdef __ZEPHYR__
+#define ENTER_CRITICAL_SECTION(state)   do { (state) = irq_lock(); } while(0)
+#define LEAVE_CRITICAL_SECTION(state)   irq_unlock((state))
+
+static unsigned int state;
+#elif defined(__NuttX__)
+#define ENTER_CRITICAL_SECTION(state)   do { (state) = enter_critical_section(); } while(0)
+#define LEAVE_CRITICAL_SECTION(state)   leave_critical_section((state))
+
+static irqstate_t state;
+#endif
+
 // g_ticks_us defined in ROMs for PRO and APP CPU
 extern uint32_t g_ticks_per_us_pro;
 #if CONFIG_IDF_TARGET_ESP32
@@ -49,7 +64,6 @@ extern uint32_t g_ticks_per_us_app;
 #endif
 #endif
 
-static int s_esp_rtc_time_lock;
 static RTC_DATA_ATTR uint64_t s_esp_rtc_time_us = 0, s_rtc_last_ticks = 0;
 
 inline static int IRAM_ATTR s_get_cpu_freq_mhz(void)
@@ -103,7 +117,7 @@ void IRAM_ATTR ets_update_cpu_frequency(uint32_t ticks_per_us)
 
 uint64_t esp_rtc_get_time_us(void)
 {
-    s_esp_rtc_time_lock = irq_lock();
+    ENTER_CRITICAL_SECTION(state);
     const uint32_t cal = esp_clk_slowclk_cal_get();
     const uint64_t rtc_this_ticks = rtc_time_get();
     const uint64_t ticks = rtc_this_ticks - s_rtc_last_ticks;
@@ -124,7 +138,7 @@ uint64_t esp_rtc_get_time_us(void)
            ((ticks_high * cal) << (32 - RTC_CLK_CAL_FRACT));
     s_esp_rtc_time_us += delta_time_us;
     s_rtc_last_ticks = rtc_this_ticks;
-    irq_unlock(s_esp_rtc_time_lock);
+    LEAVE_CRITICAL_SECTION(state);
     return s_esp_rtc_time_us;
 }
 
